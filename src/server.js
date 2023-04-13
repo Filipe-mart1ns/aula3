@@ -1,20 +1,15 @@
-const express = require('express')
-const rotas = require('./rotas')
 
+
+const express = require('express')
+
+const route = require('./routes')
 
 const app = express()
 
-const PORT = 3333
-
-
 app.use(express.json())
 
+app.use(route)
 
-app.use('/hello', (request, response) => {
-    return response.json({msg: 'hellow world' })
-
-})
-
-app.listen(PORT, () => {
-    console.log(`filipe martins ${PORT}`)
+app.listen(3333, () => {
+  console.log('rodando na porta 3333')
 })
