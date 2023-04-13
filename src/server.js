@@ -1,10 +1,14 @@
 const express = require('express')
+const rotas = require('./rotas')
+
 
 const app = express()
 
 const PORT = 3333
 
+
 app.use(express.json())
+
 
 app.use('/hello', (request, response) => {
     return response.json({msg: 'hellow world' })
