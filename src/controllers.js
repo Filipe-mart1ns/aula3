@@ -20,6 +20,8 @@ const products = [
       qtde: 5
     }
   ]
+
+  const userCart = []
   
   module.exports = {
     async createCart(request, response) {
@@ -28,23 +30,77 @@ const products = [
   
       const existsProduct = products.find(product => product.id === id)
   
-      console.log(existsProduct)
       if (existsProduct) {
         return response.status(400).json({
           error: 'Produto já cadastrado'
         })
       }
-  
-      //Adicionar um novo elemento no array, usamos o push
-      products.push({
+
+      const existsDescripition = products.find(product => product.descricao.toLocaleUpperCase()
+      )
+      if (existsDescripition) {
+        return response.status(400).json({
+          error: 'produto já cadastrado'
+
+        })
+      }
+
+      const product = {
         id,
         descricao,
         valor,
         qtde
-      })
+      }
+  
+      //Adicionar um novo elemento no array, usamos o push
+      products.push(product)
   
   
+      return response.json({ data: product })
+    },
+
+    async getlistOfCart(request, response) {
       return response.json({ data: products })
     },
+
+    async createUserCart(request, response) {
+
+      const { item } = request.body
+
+      for (const product of item) {
+        const productExists = products.find(prd => prd.id === product.id)
+
+        if (!productExists) {
+          return response.status(400).json({
+            error: 'produto não encontrado'
+          })
+        }
+
+        if (product.qtde > productExists.qtde) {
+          return response.status(400).json({
+            error:'Quantidade não dispoivel'
+          })
+        }
+
+        const userItems = {
+          productId: productExists.id,
+          descricao: productExists.descricao,
+          qtde: product.qtde,
+          valor: product.qtde * productExists.valor
+        }
+
+        userCart.push(userItems)
+
+        const index = products.findIndex(idx => idx.id === product.id)
+        products[index].qtde = products[index].qtde - product.qtde
+      }
+
+      return response.json({
+        order: userCart,
+        stock: products
+      })
+
+     }
+
   }
   
